@@ -1,0 +1,11 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: 0.1.0
+_src_path: gh:nf-core/modules-template
+copyright_holder: TGen
+copyright_license: MIT License
+copyright_year: 2025
+default_branch: main
+description: An nf-core modules repo for running AF3 on Gemini
+org_name: tgen
+repo_name: af3
+short_org_name: tgen

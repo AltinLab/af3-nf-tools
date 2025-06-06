@@ -50,7 +50,7 @@ process FILTER_MISSING_MSA {
     singularity exec --nv \\
         -B /home,/scratch,/tgen_labs --cleanenv \\
         /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
-        python ${workflow.moduleDir}/resources/usr/bin/filter_missing_msa.py \\
+        python ${moduleDir}/resources/usr/bin/filter_missing_msa.py \\
             -t "${meta.protein_type}" \\
             -f "$fasta"
             -o "${fasta.getSimpleName()}.filt.fasta"
@@ -78,7 +78,7 @@ process COMPOSE_EMPTY_MSA_JSON {
     singularity exec --nv \\
         -B /home,/scratch,/tgen_labs --cleanenv \\
         /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
-        python ${workflow.moduleDir}/resources/usr/bin/generate_single_JSON.py \\
+        python ${moduleDir}/resources/usr/bin/generate_single_JSON.py \\
             -f "$fasta" \\
             -jn "\$fname" 
     """
@@ -138,7 +138,7 @@ process STORE_MSA {
     singularity exec --nv \\
         -B /home,/scratch,/tgen_labs --cleanenv \\
         /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
-        python ${workflow.moduleDir}/resources/usr/bin/store_msa.py \\
+        python ${moduleDir}/resources/usr/bin/store_msa.py \\
             -t "${meta.protein_type}" \\
             -j "$json"
     """
@@ -180,7 +180,7 @@ process COMPOSE_INFERENCE_JSON {
     singularity exec \\
         -B /home,/scratch,/tgen_labs --cleanenv \\
         /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
-        python ${workflow.moduleDir}/resources/usr/bin/compose_inference_JSON.py \\
+        python ${moduleDir}/resources/usr/bin/compose_inference_JSON.py \\
             -jn "$job_name" \\
             -p "$peptide" \\
             ${peptide_msa} \\
@@ -254,7 +254,7 @@ process CLEAN_INFERENCE_DIR {
     singularity exec \\
         -B /home,/scratch,/tgen_labs --cleanenv \\
         /tgen_labs/altin/alphafold3/containers/af3-models.sif \\
-        python ${workflow.moduleDir}/resources/usr/bin/clean_inference_dir.py \\
+        python ${moduleDir}/resources/usr/bin/clean_inference_dir.py \\
             -i $inference_dir \\
             -o inference
     """

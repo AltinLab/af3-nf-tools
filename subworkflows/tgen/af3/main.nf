@@ -14,7 +14,7 @@ workflow MSA_WORKFLOW {
     main:
     FILTER_MISSING_MSA(meta_fasta)
     COMPOSE_EMPTY_MSA_JSON(FILTER_MISSING_MSA.out)
-    RUN_MSA(FILTER_MISSING_MSA.out)
+    RUN_MSA(COMPOSE_EMPTY_MSA_JSON.out)
     STORE_MSA(RUN_MSA.out)
 
     emit:

@@ -180,10 +180,9 @@ process COMPOSE_INFERENCE_JSON {
         python ${moduleDir}/resources/usr/bin/compose_inference_JSON.py \\
             -jn "${meta.id}" \\
             -f "$fasta" \\
-            -pt "${meta.protein_types}" \\
+            -pt "${meta.protein_types.join(' ')}" \\
             ${skip_msa_arg} \\
-            ${seeds} \\
-            -db "$params.msa_db"
+            ${seeds} 
     """
  }
 

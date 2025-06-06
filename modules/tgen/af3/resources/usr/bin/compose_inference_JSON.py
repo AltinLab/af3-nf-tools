@@ -105,7 +105,6 @@ def main():
     )
     parser.add_argument(
         "--skip_msa",
-        action="store_true",
         type=str,
         help="Skip MSA for sequence at index i",
     )

@@ -29,6 +29,7 @@ workflow INFERENCE_WORKFLOW {
 
     main:
     
+    // now EVERY inference depends on ALL MSA being done
     meta_fasta = NO_OP_DAG_DEP(meta_fasta, msa_ready)
 
     json = COMPOSE_INFERENCE_JSON(meta_fasta)

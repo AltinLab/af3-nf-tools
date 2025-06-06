@@ -33,7 +33,7 @@ process NO_OP_DAG_DEP {
     val(dependency)
 
     output:
-    tuple val(return_val)
+    val(return_val)
 
     script:
     """

@@ -17,7 +17,8 @@ workflow MSA_WORKFLOW {
 
 workflow INFERENCE_WORKFLOW {
     take:
-    meta_fasta, msa_ready
+    meta_fasta
+    msa_ready
 
     main:
     

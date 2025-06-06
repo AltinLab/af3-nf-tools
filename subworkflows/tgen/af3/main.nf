@@ -19,18 +19,14 @@ workflow MSA_WORKFLOW {
     STORE_MSA(RUN_MSA.out)
 
     emit:
-    new_msa = STORE_MSA.out
+    msa_ready = STORE_MSA.out.count()
 }
 
 workflow INFERENCE_WORKFLOW {
     take:
     meta_fasta
-    msa_ready
 
     main:
-    
-    // now EVERY inference depends on ALL MSA being done
-    meta_fasta = NO_OP_DAG_DEP(meta_fasta, msa_ready)
 
     json = COMPOSE_INFERENCE_JSON(meta_fasta)
 

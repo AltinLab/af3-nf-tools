@@ -52,7 +52,7 @@ process FILTER_MISSING_MSA {
         /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
         python ${moduleDir}/resources/usr/bin/filter_missing_msa.py \\
             -t "${meta.protein_type}" \\
-            -f "$fasta"
+            -f "$fasta" \\
             -o "${fasta.getSimpleName()}.filt.fasta"
     """
 }

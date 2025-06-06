@@ -17,7 +17,7 @@ process SEQ_LIST_TO_FASTA {
     : > "\$filename"
 
     i=1
-    for seq in ${seq_list}; do
+    for seq in ${seq_list.join(' ')}; do
         echo ">\$i"   >> "\$filename"
         echo "\$seq"  >> "\$filename"
         i=\$(( i + 1 ))

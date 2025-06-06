@@ -3,7 +3,7 @@ include { FILTER_MISSING_MSA;
             RUN_MSA;
             STORE_MSA;
             COMPOSE_INFERENCE_JSON;
-            RUN_INFERENCE;
+            BATCHED_INFERENCE;
             CLEAN_INFERENCE_DIR} from '../../../modules/tgen/af3'
 
 

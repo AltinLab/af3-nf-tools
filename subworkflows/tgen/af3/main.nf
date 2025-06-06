@@ -1,4 +1,10 @@
-include from '../../../modules/tgen/af3'
+include { FILTER_MISSING_MSA; 
+            COMPOSE_EMPTY_MSA_JSON; 
+            RUN_MSA;
+            STORE_MSA;
+            COMPOSE_INFERENCE_JSON;
+            RUN_INFERENCE;
+            CLEAN_INFERENCE_DIR} from '../../../modules/tgen/af3'
 
 
 workflow MSA_WORKFLOW {

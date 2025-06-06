@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import argparse
-import vastdb
 import os
 
+import vastdb
 
 VAST_S3_ACCESS_KEY_ID = os.getenv("VAST_S3_ACCESS_KEY_ID")
 VAST_S3_SECRET_ACCESS_KEY = os.getenv("VAST_S3_SECRET_ACCESS_KEY")
 
 
-def is_msa_stored(protein_type, seq, species, db_url):
+def is_msa_stored(protein_type, seq, db_url):
     """Checks if the name exists in the VAST database."""
     try:
 
@@ -66,13 +66,6 @@ if __name__ == "__main__":
         "-f", "--fasta", type=str, required=True, help="Protein sequence"
     )
     parser.add_argument(
-        "-db",
-        "--database",
-        type=str,
-        required=True,
-        help="VAST database URL",
-    )
-    parser.add_argument(
         "-o",
         "--output",
         type=str,
@@ -81,15 +74,10 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if not is_msa_stored(
-        args.protein_type, args.seq, args.species, args.database
-    ):
-        species = args.species if args.species else "null"
-        name = args.name if args.name else "null"
-        chain = args.chain if args.chain else "null"
-        protein_class = args.protein_class if args.protein_class else "null"
+    database = "https://pub-vscratch.vast.rc.tgen.org"
 
-        with open(args.output, "a") as f:
-            f.write(
-                f"{species},{args.protein_type},{args.seq},{chain},{name},{protein_class}"
-            )
+    if not is_msa_stored(args.protein_type, args.seq, database):
+        with open(args.fasta) as f:
+            content = f.read()
+        with open(args.output, "w") as f:
+            f.write(content)

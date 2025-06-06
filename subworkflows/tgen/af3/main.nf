@@ -1,4 +1,4 @@
-include { FILTER_MISSING_MSA, STORE_MSA, RUN_MSA } from '../../../modules/tgen/af3/msa'
+include from '../../../modules/tgen/af3'
 
 
 workflow MSA_WORKFLOW {
@@ -6,9 +6,10 @@ workflow MSA_WORKFLOW {
     meta_fasta
 
     main:
-    filt = filter_missing_msa(meta_fasta)
-    complete = run_msa(filt)
-    store = store_msa(complete)
+    FILTER_MISSING_MSA(meta_fasta)
+    COMPOSE_EMPTY_MSA_JSON(FILTER_MISSING_MSA.out)
+    RUN_MSA(FILTER_MISSING_MSA.out)
+    STORE_MSA(RUN_MSA.out)
 
     emit:
     new_msa = store

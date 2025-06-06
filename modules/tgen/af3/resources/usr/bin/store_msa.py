@@ -8,7 +8,6 @@ import pyarrow as pa
 from datetime import date
 from pathlib import Path
 import hashlib
-import fcntl
 from contextlib import contextmanager
 
 VAST_S3_ACCESS_KEY_ID = os.getenv("VAST_S3_ACCESS_KEY_ID")
@@ -16,7 +15,8 @@ VAST_S3_SECRET_ACCESS_KEY = os.getenv("VAST_S3_SECRET_ACCESS_KEY")
 
 EPOCH = date(1970, 1, 1)
 
-def read_json(json_path, seq):
+
+def read_json(json_path):
     """Reads the JSON file and extracts relevant data."""
     try:
         with open(json_path, "r") as f:
@@ -25,7 +25,7 @@ def read_json(json_path, seq):
         msa_data = data.get("sequences", None)[0].get("protein", None)
         del msa_data["id"]
 
-        empty_query = f">query\n{seq}\n"
+        empty_query = f">query\n{msa_data["sequence"]}\n"
 
         if (
             msa_data["unpairedMsa"] == empty_query
@@ -42,15 +42,11 @@ def read_json(json_path, seq):
 
 
 def store_in_database(
-    species,
     protein_type,
     seq,
     db_url,
     msa_json,
     is_empty,
-    name=None,
-    chain=None,
-    protein_class=None,
 ):
     """Stores the JSON directly into the VAST database."""
 
@@ -66,7 +62,7 @@ def store_in_database(
 
     filepath = Path("/tgen_labs/altin/alphafold3/msa") / protein_type / fname
 
-    with locked_open(filepath, "w+") as f:
+    with open(filepath, "w+") as f:
         try:
             session = vastdb.connect(
                 endpoint=db_url,
@@ -87,7 +83,7 @@ def store_in_database(
 
                     data = [
                         [seq],
-                        [chain],
+                        [None],
                         [filepath.as_posix()],
                         [is_empty],
                         [date_val],
@@ -98,16 +94,13 @@ def store_in_database(
                 elif protein_type == "mhc":
                     table = schema.table("mhc_chain_msa")
                     primary_key_name = "mhc_chain_msa_id"
-                    predicate = (table["mhc_chain_msa_id"] == seq) & (
-                        table["species"] == species
-                    )
-
+                    predicate = (table["mhc_chain_msa_id"] == seq)
                     data = [
                         [seq],
-                        [name],
-                        [chain],
-                        [protein_class],
-                        [species],
+                        [None],
+                        [None],
+                        [None],
+                        [None],
                         [filepath.as_posix()],
                         [is_empty],
                         [date_val],
@@ -178,27 +171,9 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-sp", "--species", type=str, required=True, help="Species"
-    )
-    parser.add_argument(
         "-t", "--protein_type", type=str, required=True, help="Protein type"
     )
-    parser.add_argument(
-        "-s", "--seq", type=str, required=True, help="Protein sequence"
-    )
-    parser.add_argument(
-        "-c", "--chain", type=str, required=False, help="Protein chain type"
-    )
-    parser.add_argument(
-        "-n", "--name", type=str, required=False, help="Protein name"
-    )
-    parser.add_argument(
-        "-cl",
-        "--protein_class",
-        type=str,
-        required=False,
-        help="Protein class",
-    )
+
     parser.add_argument(
         "-j",
         "--json_msa_path",
@@ -207,30 +182,20 @@ if __name__ == "__main__":
         help="Path to JSON MSA",
     )
 
-    parser.add_argument(
-        "-db",
-        "--database",
-        type=str,
-        required=True,
-        help="VAST database URL",
-    )
-
     args = parser.parse_args()
 
-    if not os.path.exists(args.json_msa_path):
-        print(f"Error: JSON file {args.json_msa_path} not found.")
-        exit(1)
+    database = "https://pub-vscratch.vast.rc.tgen.org"
 
-    msa_json, is_empty = read_json(args.json_msa_path, args.seq)
+    # if not os.path.exists(args.json_msa_path):
+    #     print(f"Error: JSON file {args.json_msa_path} not found.")
+    #     exit(1)
+
+    msa_json, is_empty = read_json(args.json_msa_path)
 
     store_in_database(
-        args.species,
         args.protein_type,
         args.seq,
         args.database,
         msa_json,
         is_empty,
-        chain=args.chain,
-        name=args.name,
-        protein_class=args.protein_class,
     )

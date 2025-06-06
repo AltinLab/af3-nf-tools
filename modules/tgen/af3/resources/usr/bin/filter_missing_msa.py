@@ -8,6 +8,36 @@ VAST_S3_ACCESS_KEY_ID = os.getenv("VAST_S3_ACCESS_KEY_ID")
 VAST_S3_SECRET_ACCESS_KEY = os.getenv("VAST_S3_SECRET_ACCESS_KEY")
 
 
+def read_fasta_seqs(path):
+    """
+    Read a FASTA file and return a list of sequences (strings),
+    concatenating multi-line records correctly.
+    """
+    seqs = []
+    current_seq = []
+
+    with open(path) as f:
+        for line in f:
+            line = line.rstrip()
+            if not line:
+                continue
+            if line.startswith(">"):
+                # If we were in the middle of a sequence, save it.
+                if current_seq:
+                    seqs.append("".join(current_seq))
+                    current_seq = []
+                # (We skip the header itself; if you need headers, collect them here.)
+            else:
+                # Append this line to the current sequence buffer
+                current_seq.append(line)
+
+        # After the loop, make sure to save the last sequence
+        if current_seq:
+            seqs.append("".join(current_seq))
+
+    return seqs
+
+
 def is_msa_stored(protein_type, seq, db_url):
     """Checks if the name exists in the VAST database."""
     try:
@@ -74,9 +104,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    with open(args.fasta) as f:
-        lines = f.readlines()
-        seq = "".join(line.strip() for line in lines[1:])
+    seq = read_fasta_seqs(args.fasta)[0]
 
     database = "https://pub-vscratch.vast.rc.tgen.org"
 

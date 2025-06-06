@@ -28,7 +28,7 @@ process SEQ_LIST_TO_FASTA {
 process FILTER_MISSING_MSA {
     queue 'compute'
     executor "slurm"
-    tag "${proteinType}_${seq}"
+    tag "${meta.protein_type}-${meta.id}"
     debug true
 
     input:
@@ -60,7 +60,7 @@ process FILTER_MISSING_MSA {
 process COMPOSE_EMPTY_MSA_JSON {
     queue 'compute'
     executor "slurm"
-    tag "${meta.id}"
+    tag "${meta.protein_type}-${meta.id}"
 
     input:
     tuple val(meta), path(fasta)
@@ -90,7 +90,7 @@ process RUN_MSA {
     memory '64GB'
     executor "slurm"
     clusterOptions '--time=4:00:00'
-    tag "${proteinType}_${seq}"
+    tag "${meta.protein_type}-${meta.id}"
 
     input:
     tuple val(meta), path(json)
@@ -120,7 +120,7 @@ process RUN_MSA {
 process STORE_MSA {
     queue 'compute'
     executor "slurm"
-    tag "${proteinType}_${seq}"
+    tag "${meta.protein_type}-${meta.id}"
     
     input:
     tuple val(meta), path(json)
@@ -149,17 +149,15 @@ process STORE_MSA {
 process COMPOSE_INFERENCE_JSON {
     queue 'compute'
     executor "slurm"
-    tag "$job_name"
+    tag "${meta.id}"
 
     input:
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path(fasta), emit: fasta
-    tuple val(meta), path("*.json"), emit: json
+    tuple val(meta), path("*.json")
 
     script:
-    def peptide_msa = params.no_peptide ? '' : "-pm"
     def seeds = params.seeds ? "--seeds ${params.seeds}" : ''
     def check_inf_exists = params.check_inf_exists ? """
     if [ -d "${params.out_dir}/inference/$job_name" ]; then
@@ -167,8 +165,7 @@ process COMPOSE_INFERENCE_JSON {
         exit 0
     fi
     """ : ''
-    // this is to allow no B2M in class I
-    def mhc_2_seq_arg = mhc_2_seq ? "-m2s '$mhc_2_seq'" : ''
+    def skip_msa_arg = params.skip_msa ? "--skip_msa ${params.skip_msa}" : ''
     """
     module load singularity
 
@@ -182,12 +179,9 @@ process COMPOSE_INFERENCE_JSON {
         /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
         python ${moduleDir}/resources/usr/bin/compose_inference_JSON.py \\
             -jn "$job_name" \\
-            -p "$peptide" \\
-            ${peptide_msa} \\
-            -m1s "$mhc_1_seq" \\
-            ${mhc_2_seq_arg} \\
-            -t1s "$tcr_1_seq" \\
-            -t2s "$tcr_2_seq" \\
+            -f "$fasta" \\
+            -pt "${meta.protein_types}" \\
+            ${skip_msa_arg} \\
             ${seeds} \\
             -db "$params.msa_db"
     """
@@ -200,16 +194,16 @@ process BATCHED_INFERENCE {
     memory '64GB'
     executor "slurm"
     tag "batched_inference"
-    if (params.compress == false) {
-        publishDir "${params.out_dir}", mode: 'copy'
+
+    if (params.compress_inf == false) {
+        publishDir "${params.inf_dir}", mode: 'copy'
     }
 
     input:
     tuple val(batched_meta), path(batched_json)
 
     output:
-    tuple val(batched_meta), path("inference/*"), emit: inference
-
+    tuple val(batched_meta), path("inference/*")
     script:
     """
     module load singularity
@@ -237,13 +231,13 @@ process CLEAN_INFERENCE_DIR {
     queue 'compute'
     executor "slurm"
     tag "clean_inference"
-    publishDir "${params.out_dir}", mode: 'copy'
+    publishDir "${params.inf_dir}", mode: 'copy'
 
     input:
     tuple val(meta), path(inference_dir)
 
     output:
-    tuple val(meta), path("inference/*"), emit: inference
+    tuple val(meta), path("inference/*")
 
     script:
     """

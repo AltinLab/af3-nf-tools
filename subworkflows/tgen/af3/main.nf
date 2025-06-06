@@ -30,11 +30,15 @@ workflow INFERENCE_WORKFLOW {
     
     json = COMPOSE_INFERENCE_JSON(meta_fasta)
 
-    inference = BATCHED_INFERENCE(json)
+    batched_json = json.collate(params.collate_inf_size)
 
-    // Clean up inference directory
-    clean_inference = CLEAN_INFERENCE_DIR(inference)
+    inference = BATCHED_INFERENCE(batched_json)
+
+    if (params.compress_inf == true) {
+        // Clean up inference directory
+        inference = CLEAN_INFERENCE_DIR(inference)
+    }
 
     emit:
-    new_inference = clean_inference
+    new_inference = inference
 }

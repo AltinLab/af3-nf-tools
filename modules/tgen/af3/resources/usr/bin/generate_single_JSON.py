@@ -3,6 +3,36 @@ import argparse
 import json
 
 
+def read_fasta_seqs(path):
+    """
+    Read a FASTA file and return a list of sequences (strings),
+    concatenating multi-line records correctly.
+    """
+    seqs = []
+    current_seq = []
+
+    with open(path) as f:
+        for line in f:
+            line = line.rstrip()
+            if not line:
+                continue
+            if line.startswith(">"):
+                # If we were in the middle of a sequence, save it.
+                if current_seq:
+                    seqs.append("".join(current_seq))
+                    current_seq = []
+                # (We skip the header itself; if you need headers, collect them here.)
+            else:
+                # Append this line to the current sequence buffer
+                current_seq.append(line)
+
+        # After the loop, make sure to save the last sequence
+        if current_seq:
+            seqs.append("".join(current_seq))
+
+    return seqs
+
+
 def get_arguments():
     parser = argparse.ArgumentParser(description="Commands to pass to scripts")
     parser.add_argument(
@@ -32,9 +62,7 @@ job_name = args.job_name
 fasta_path = args.fasta_path
 id = args.protein_id
 
-with open(fasta_path) as f:
-    lines = f.readlines()
-    sequence = "".join(line.strip() for line in lines[1:])
+sequence = read_fasta_seqs(fasta_path)[0]
 
 json_dict = {
     "name": job_name,

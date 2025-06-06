@@ -30,7 +30,7 @@ workflow INFERENCE_WORKFLOW {
     
     json = COMPOSE_INFERENCE_JSON(meta_fasta)
 
-    inference = RUN_INFERENCE(json)
+    inference = BATCHED_INFERENCE(json)
 
     // Clean up inference directory
     clean_inference = CLEAN_INFERENCE_DIR(inference)

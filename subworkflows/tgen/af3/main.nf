@@ -18,7 +18,7 @@ workflow MSA_WORKFLOW {
     STORE_MSA(RUN_MSA.out)
 
     emit:
-    new_msa = store
+    new_msa = STORE_MSA.out
 }
 
 workflow INFERENCE_WORKFLOW {

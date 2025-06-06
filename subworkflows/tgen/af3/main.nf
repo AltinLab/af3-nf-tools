@@ -1,10 +1,3 @@
-// defaults
-params.compress_inf = params.compress_inf ?: true
-params.seeds = params.seeds ?: "1"
-params.collate_inf_size = params.collate_inf_size ?: 50
-params.check_inf_exists = params.check_inf_exists ?: true
-params.skip_msa = params.skip_msa ?: false
-
 include { FILTER_MISSING_MSA; 
             COMPOSE_EMPTY_MSA_JSON; 
             RUN_MSA;

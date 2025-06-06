@@ -4,8 +4,7 @@ include { FILTER_MISSING_MSA;
             STORE_MSA;
             COMPOSE_INFERENCE_JSON;
             BATCHED_INFERENCE;
-            CLEAN_INFERENCE_DIR;
-            NO_OP_DAG_DEP} from '../../../modules/tgen/af3'
+            CLEAN_INFERENCE_DIR} from '../../../modules/tgen/af3'
 
 
 workflow MSA_WORKFLOW {

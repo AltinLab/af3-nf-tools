@@ -159,7 +159,8 @@ def main():
             }
         else:
             msa = get_msa(session, protein_type[i], seq)
-            msa["protein"]["id"] = chr(65 + i)
+            msa["id"] = chr(65 + i)
+            msa = {"protein": msa}
         msas.append(msa)
 
     final_json = {

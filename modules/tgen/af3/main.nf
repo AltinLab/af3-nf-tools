@@ -29,7 +29,8 @@ process NO_OP_DAG_DEP {
     tag "no_op_dag_dep"
 
     input:
-    tuple val(return_val), val(dependency)
+    val(return_val)
+    val(dependency)
 
     output:
     tuple val(return_val)

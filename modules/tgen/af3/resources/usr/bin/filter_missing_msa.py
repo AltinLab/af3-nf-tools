@@ -74,9 +74,13 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    with open(args.fasta) as f:
+        lines = f.readlines()
+        seq = "".join(line.strip() for line in lines[1:])
+
     database = "https://pub-vscratch.vast.rc.tgen.org"
 
-    if not is_msa_stored(args.protein_type, args.seq, database):
+    if not is_msa_stored(args.protein_type, seq, database):
         with open(args.fasta) as f:
             content = f.read()
         with open(args.output, "w") as f:

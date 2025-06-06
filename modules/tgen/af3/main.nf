@@ -25,6 +25,20 @@ process SEQ_LIST_TO_FASTA {
     """
 }
 
+process NO_OP_DAG_DEP {
+    tag "no_op_dag_dep"
+
+    input:
+    tuple val(return_val), val(dependency)
+
+    output:
+    tuple val(return_val)
+
+    script:
+    """
+    """
+}
+
 process FILTER_MISSING_MSA {
     queue 'compute'
     executor "slurm"

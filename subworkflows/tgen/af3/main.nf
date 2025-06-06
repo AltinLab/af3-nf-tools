@@ -4,7 +4,8 @@ include { FILTER_MISSING_MSA;
             STORE_MSA;
             COMPOSE_INFERENCE_JSON;
             BATCHED_INFERENCE;
-            CLEAN_INFERENCE_DIR} from '../../../modules/tgen/af3'
+            CLEAN_INFERENCE_DIR;
+            NO_OP_DAG_DEP} from '../../../modules/tgen/af3'
 
 
 workflow MSA_WORKFLOW {
@@ -28,9 +29,15 @@ workflow INFERENCE_WORKFLOW {
 
     main:
     
+    meta_fasta = NO_OP_DAG_DEP(meta_fasta, msa_ready)
+
     json = COMPOSE_INFERENCE_JSON(meta_fasta)
 
-    batched_json = json.collate(params.collate_inf_size)
+    batched_json = json.collate(params.collate_inf_size).map { batch ->
+        def allMeta    = batch.collect { it[0] }
+        def allSeqLists = batch.collect { it[1] }
+        tuple(allMeta, allSeqLists)
+    }
 
     inference = BATCHED_INFERENCE(batched_json)
 

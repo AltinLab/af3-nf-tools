@@ -160,8 +160,8 @@ process COMPOSE_INFERENCE_JSON {
     script:
     def seeds = params.seeds ? "--seeds ${params.seeds}" : ''
     def check_inf_exists = params.check_inf_exists ? """
-    if [ -d "${params.out_dir}/inference/$job_name" ]; then
-        echo "Skipping $job_name"
+    if [ -d "${params.out_dir}/inference/${meta.id}" ]; then
+        echo "Skipping ${meta.id}"
         exit 0
     fi
     """ : ''
@@ -178,7 +178,7 @@ process COMPOSE_INFERENCE_JSON {
         -B /home,/scratch,/tgen_labs --cleanenv \\
         /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
         python ${moduleDir}/resources/usr/bin/compose_inference_JSON.py \\
-            -jn "$job_name" \\
+            -jn "${meta.id}" \\
             -f "$fasta" \\
             -pt "${meta.protein_types}" \\
             ${skip_msa_arg} \\

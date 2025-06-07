@@ -35,7 +35,11 @@ workflow INFERENCE_WORKFLOW {
         tuple(allMeta, allSeqLists)
     }
 
-    inference = BATCHED_INFERENCE(batched_json)
+    inference = BATCHED_INFERENCE(batched_json).flatMap { metas, inf_dirs ->
+        metas.indices.collect { idx ->
+        tuple( metas[idx], inf_dirs[idx] )
+        }
+    }
 
     if (params.compress_inf == true) {
         // Clean up inference directory

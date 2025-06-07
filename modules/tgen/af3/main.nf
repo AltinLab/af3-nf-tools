@@ -155,7 +155,8 @@ process COMPOSE_INFERENCE_JSON {
     tuple val(meta), path(fasta)
 
     output:
-    tuple val(meta), path("*.json")
+    tuple val(meta), path("*.json"), optional: true
+
 
     script:
     def seeds = params.seeds ? "--seeds ${params.seeds}" : ''

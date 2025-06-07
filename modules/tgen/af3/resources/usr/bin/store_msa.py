@@ -196,7 +196,7 @@ if __name__ == "__main__":
     store_in_database(
         args.protein_type,
         seq,
-        args.database,
+        database,
         msa_json,
         is_empty,
     )

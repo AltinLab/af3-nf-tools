@@ -79,7 +79,7 @@ def store_in_database(
                 if protein_type == "tcr":
                     table = schema.table("tcr_chain_msa")
                     primary_key_name = "tcr_chain_msa_id"
-                    predicate = table["tcr_chain_msa_id"] == seq
+                    predicate = (table["tcr_chain_msa_id"] == seq)
 
                     data = [
                         [seq],
@@ -192,9 +192,11 @@ if __name__ == "__main__":
 
     msa_json, is_empty = read_json(args.json_msa_path)
 
+    seq = msa_json["sequence"]
+
     store_in_database(
         args.protein_type,
-        args.seq,
+        seq,
         args.database,
         msa_json,
         is_empty,

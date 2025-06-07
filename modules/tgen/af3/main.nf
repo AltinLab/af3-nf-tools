@@ -195,7 +195,7 @@ process BATCHED_INFERENCE {
     tag "batched_inference"
 
     if (params.compress_inf == false) {
-        publishDir "${params.inf_dir}", mode: 'copy'
+        publishDir "${params.outdir}", mode: 'copy'
     }
 
     input:
@@ -230,7 +230,7 @@ process CLEAN_INFERENCE_DIR {
     queue 'compute'
     executor "slurm"
     tag "clean_inference"
-    publishDir "${params.inf_dir}", mode: 'copy'
+    publishDir "${params.outdir}", mode: 'copy'
 
     input:
     tuple val(meta), path(inference_dir)

@@ -25,7 +25,8 @@ def read_json(json_path):
         msa_data = data.get("sequences", None)[0].get("protein", None)
         del msa_data["id"]
 
-        empty_query = f">query\n{msa_data["sequence"]}\n"
+        seq = msa_data["sequence"]
+        empty_query = f">query\n{seq}\n"
 
         if (
             msa_data["unpairedMsa"] == empty_query
@@ -35,7 +36,7 @@ def read_json(json_path):
         else:
             is_empty = False
 
-        return json.dumps(msa_data), is_empty
+        return json.dumps(msa_data), is_empty, seq
     except Exception as e:
         print(f"Error processing JSON: {e}")
         return None
@@ -79,7 +80,7 @@ def store_in_database(
                 if protein_type == "tcr":
                     table = schema.table("tcr_chain_msa")
                     primary_key_name = "tcr_chain_msa_id"
-                    predicate = (table["tcr_chain_msa_id"] == seq)
+                    predicate = table["tcr_chain_msa_id"] == seq
 
                     data = [
                         [seq],
@@ -94,7 +95,7 @@ def store_in_database(
                 elif protein_type == "mhc":
                     table = schema.table("mhc_chain_msa")
                     primary_key_name = "mhc_chain_msa_id"
-                    predicate = (table["mhc_chain_msa_id"] == seq)
+                    predicate = table["mhc_chain_msa_id"] == seq
                     data = [
                         [seq],
                         [None],
@@ -190,9 +191,7 @@ if __name__ == "__main__":
     #     print(f"Error: JSON file {args.json_msa_path} not found.")
     #     exit(1)
 
-    msa_json, is_empty = read_json(args.json_msa_path)
-
-    seq = msa_json["sequence"]
+    msa_json, is_empty, seq = read_json(args.json_msa_path)
 
     store_in_database(
         args.protein_type,

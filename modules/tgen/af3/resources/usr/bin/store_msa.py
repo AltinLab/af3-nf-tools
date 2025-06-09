@@ -83,7 +83,7 @@ def store_in_database(
                     if attempt == MAX_RETRY_ATTEMPT:
                         raise
                     time.sleep(delay)
-                    delay = delay
+                    delay = delay * 2
 
             # manually perform an UPSERT
             with session.transaction() as tx:

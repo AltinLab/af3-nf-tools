@@ -1,9 +1,5 @@
 process SEQ_LIST_TO_FASTA {
-    queue       'compute'
-    executor    "slurm"
-    cpus        1
-    memory      '1GB'
-    clusterOptions '--nodes=1 --ntasks=1 --time=00:10:00'
+    label "process_local"
 
     input:
       tuple val(meta), val(seq_list)
@@ -26,10 +22,8 @@ process SEQ_LIST_TO_FASTA {
 }
 
 process FILTER_MISSING_MSA {
-    queue 'compute'
-    executor "slurm"
+    label "process_local"
     tag "${meta.protein_type}-${meta.id}"
-    debug true
 
     input:
     tuple val(meta), path(fasta)
@@ -58,8 +52,7 @@ process FILTER_MISSING_MSA {
 }
 
 process COMPOSE_EMPTY_MSA_JSON {
-    queue 'compute'
-    executor "slurm"
+    label "process_local"
     tag "${meta.protein_type}-${meta.id}"
 
     input:
@@ -85,10 +78,8 @@ process COMPOSE_EMPTY_MSA_JSON {
  }
 
 process FILT_FORMAT_MSA {
-    queue 'compute'
-    executor "slurm"
+    label "process_local"
     tag "${meta.protein_type}-${meta.id}"
-    debug true
 
     input:
     tuple val(meta), path(fasta)
@@ -148,8 +139,7 @@ process RUN_MSA {
 
 
 process STORE_MSA {
-    queue 'compute'
-    executor "slurm"
+    label "process_local"
     tag "${meta.protein_type}-${meta.id}"
     
     input:
@@ -258,8 +248,7 @@ process BATCHED_INFERENCE {
 }
 
 process CLEAN_INFERENCE_DIR {
-    queue 'compute'
-    executor "slurm"
+    label "process_local"
     tag "clean_inference"
     publishDir "${params.outdir}", mode: 'copy'
 

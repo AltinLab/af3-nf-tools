@@ -103,7 +103,6 @@ if __name__ == "__main__":
         help="Output file",
     )
     args = parser.parse_args()
-    job_name = args.job_name
     seq = read_fasta_seqs(args.fasta)[0]
 
     database = "https://pub-vscratch.vast.rc.tgen.org"

@@ -8,8 +8,11 @@ import vastdb
 import fcntl
 from contextlib import contextmanager
 
+import time
+
 VAST_S3_ACCESS_KEY_ID = os.getenv("VAST_S3_ACCESS_KEY_ID")
 VAST_S3_SECRET_ACCESS_KEY = os.getenv("VAST_S3_SECRET_ACCESS_KEY")
+MAX_RETRY_ATTEMPT = 5
 
 
 def read_fasta_seqs(path):
@@ -135,12 +138,22 @@ def main():
 
     database = "https://pub-vscratch.vast.rc.tgen.org"
 
-    session = vastdb.connect(
-        endpoint=database,
-        access=VAST_S3_ACCESS_KEY_ID,
-        secret=VAST_S3_SECRET_ACCESS_KEY,
-        ssl_verify=False,
-    )
+    delay = 1
+
+    for attempt in range(1, MAX_RETRY_ATTEMPT + 1):
+        try:
+            session = vastdb.connect(
+                endpoint=database,
+                access=VAST_S3_ACCESS_KEY_ID,
+                secret=VAST_S3_SECRET_ACCESS_KEY,
+                ssl_verify=False,
+            )
+            break
+        except Exception as e:
+            if attempt == MAX_RETRY_ATTEMPT:
+                raise
+            time.sleep(delay)
+            delay = delay * 2
     msas = []
 
     seqs = read_fasta_seqs(args.fasta_path)

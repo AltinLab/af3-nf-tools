@@ -167,8 +167,7 @@ process STORE_MSA {
 
 
 process COMPOSE_INFERENCE_JSON {
-    queue 'compute'
-    executor "slurm"
+    label "process_local"
     tag "${meta.id}"
 
     input:

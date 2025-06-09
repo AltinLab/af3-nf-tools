@@ -12,7 +12,7 @@ import time
 
 VAST_S3_ACCESS_KEY_ID = os.getenv("VAST_S3_ACCESS_KEY_ID")
 VAST_S3_SECRET_ACCESS_KEY = os.getenv("VAST_S3_SECRET_ACCESS_KEY")
-MAX_RETRY_ATTEMPT = 5
+MAX_RETRY_ATTEMPT = 10
 
 
 def read_fasta_seqs(path):

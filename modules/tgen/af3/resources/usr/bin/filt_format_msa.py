@@ -7,7 +7,7 @@ import time
 
 VAST_S3_ACCESS_KEY_ID = os.getenv("VAST_S3_ACCESS_KEY_ID")
 VAST_S3_SECRET_ACCESS_KEY = os.getenv("VAST_S3_SECRET_ACCESS_KEY")
-MAX_RETRY_ATTEMPT = 5
+MAX_RETRY_ATTEMPT = 10
 
 
 def read_fasta_seqs(path):
@@ -42,59 +42,56 @@ def read_fasta_seqs(path):
 
 def is_msa_stored(protein_type, seq, db_url):
     """Checks if the name exists in the VAST database."""
-    try:
 
-        delay = 1
+    delay = 1
 
-        for attempt in range(1, MAX_RETRY_ATTEMPT + 1):
-            try:
-                session = vastdb.connect(
-                    endpoint=db_url,
-                    access=VAST_S3_ACCESS_KEY_ID,
-                    secret=VAST_S3_SECRET_ACCESS_KEY,
-                    ssl_verify=False,
-                )
-                break
-            except Exception as e:
-                if attempt == MAX_RETRY_ATTEMPT:
-                    raise
-                time.sleep(delay)
-                delay = delay * 2
+    for attempt in range(1, MAX_RETRY_ATTEMPT + 1):
+        try:
+            session = vastdb.connect(
+                endpoint=db_url,
+                access=VAST_S3_ACCESS_KEY_ID,
+                secret=VAST_S3_SECRET_ACCESS_KEY,
+                ssl_verify=False,
+            )
+            break
+        except Exception as e:
+            if attempt == MAX_RETRY_ATTEMPT:
+                raise
+            time.sleep(delay)
+            delay = delay * 2
 
-        with session.transaction() as tx:
+    with session.transaction() as tx:
 
-            bucket = tx.bucket("altindbs3")
-            schema = bucket.schema("alphafold-3")
+        bucket = tx.bucket("altindbs3")
+        schema = bucket.schema("alphafold-3")
 
-            if protein_type == "tcr":
-                table = schema.table("tcr_chain_msa")
-                predicate = table["tcr_chain_msa_id"] == seq
-                primary_key_name = "tcr_chain_msa_id"
+        if protein_type == "tcr":
+            table = schema.table("tcr_chain_msa")
+            predicate = table["tcr_chain_msa_id"] == seq
+            primary_key_name = "tcr_chain_msa_id"
 
-            elif protein_type == "mhc":
-                table = schema.table("mhc_chain_msa")
-                predicate = table["mhc_chain_msa_id"] == seq
-                primary_key_name = "mhc_chain_msa_id"
-            elif protein_type == "peptide":
-                table = schema.table("peptide_msa")
-                predicate = table["peptide_msa_id"] == seq
-                primary_key_name = "peptide_msa_id"
-            elif protein_type == "any":
-                table = schema.table("any_msa")
-                predicate = table["any_msa_id"] == seq
-                primary_key_name = "any_msa_id"
-            else:
-                raise ValueError
+        elif protein_type == "mhc":
+            table = schema.table("mhc_chain_msa")
+            predicate = table["mhc_chain_msa_id"] == seq
+            primary_key_name = "mhc_chain_msa_id"
+        elif protein_type == "peptide":
+            table = schema.table("peptide_msa")
+            predicate = table["peptide_msa_id"] == seq
+            primary_key_name = "peptide_msa_id"
+        elif protein_type == "any":
+            table = schema.table("any_msa")
+            predicate = table["any_msa_id"] == seq
+            primary_key_name = "any_msa_id"
+        else:
+            raise ValueError
 
-            result = table.select(
-                columns=[primary_key_name], predicate=predicate
-            ).read_all()
+        result = table.select(
+            columns=[primary_key_name], predicate=predicate
+        ).read_all()
 
-            if result.shape[0] == 0:
-                return False
-            return True
-    except Exception as e:
-        raise ConnectionError(f"Error connecting to database: {e}")
+        if result.shape[0] == 0:
+            return False
+        return True
 
 
 if __name__ == "__main__":

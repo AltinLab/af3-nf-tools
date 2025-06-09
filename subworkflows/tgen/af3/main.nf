@@ -1,5 +1,4 @@
-include { FILTER_MISSING_MSA; 
-            COMPOSE_EMPTY_MSA_JSON; 
+include { FILT_FORMAT_MSA;
             RUN_MSA;
             STORE_MSA;
             COMPOSE_INFERENCE_JSON;
@@ -12,9 +11,8 @@ workflow MSA_WORKFLOW {
     meta_fasta
 
     main:
-    FILTER_MISSING_MSA(meta_fasta)
-    COMPOSE_EMPTY_MSA_JSON(FILTER_MISSING_MSA.out)
-    RUN_MSA(COMPOSE_EMPTY_MSA_JSON.out)
+    FILT_FORMAT_MSA(meta_fasta)
+    RUN_MSA(FILT_FORMAT_MSA.out)
     STORE_MSA(RUN_MSA.out)
 
     emit:

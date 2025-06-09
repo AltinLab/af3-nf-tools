@@ -53,7 +53,7 @@ process FILTER_MISSING_MSA {
         python ${moduleDir}/resources/usr/bin/filter_missing_msa.py \\
             -t "${meta.protein_type}" \\
             -f "$fasta" \\
-            -o "${fasta.getSimpleName()}.filt.fasta"
+            -o "${fasta.getSimpleName()}.filt.json"
     """
 }
 
@@ -84,12 +84,42 @@ process COMPOSE_EMPTY_MSA_JSON {
     """
  }
 
+process FILT_FORMAT_MSA {
+    queue 'compute'
+    executor "slurm"
+    tag "${meta.protein_type}-${meta.id}"
+    debug true
+
+    input:
+    tuple val(meta), path(fasta)
+
+    output:
+    tuple val(meta), path("*.json"), optional: true
+
+
+    script:
+    """
+    module load singularity
+
+    export SINGULARITYENV_VAST_S3_ACCESS_KEY_ID="\$VAST_S3_ACCESS_KEY_ID"
+    export SINGULARITYENV_VAST_S3_SECRET_ACCESS_KEY="\$VAST_S3_SECRET_ACCESS_KEY"
+
+    singularity exec --nv \\
+        -B /home,/scratch,/tgen_labs --cleanenv \\
+        /tgen_labs/altin/alphafold3/containers/msa-db.sif \\
+        python ${moduleDir}/resources/usr/bin/filt_format_msa.py \\
+            -t "${meta.protein_type}" \\
+            -f "$fasta" \\
+            -o "${fasta.getSimpleName()}.filt.fasta"
+    """
+}
+
 process RUN_MSA {
     queue 'compute'
     cpus '8'
     memory '64GB'
     executor "slurm"
-    clusterOptions '--time=4:00:00'
+    clusterOptions '--time=8:00:00'
     tag "${meta.protein_type}-${meta.id}"
 
     input:

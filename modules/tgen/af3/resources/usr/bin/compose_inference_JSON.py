@@ -74,9 +74,7 @@ def get_msa(session, protein_type, seq):
         else:
             raise ValueError
 
-        result = table.select(
-            columns=["msa_path"], predicate=predicate
-        ).read_all()
+        result = table.select(columns=["msa_path"], predicate=predicate).read_all()
 
         if result.shape[0] != 1:
             raise ValueError(
@@ -96,9 +94,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Compose Alphafold3 input JSON by querying VAST for chain MSA information."
     )
-    parser.add_argument(
-        "-jn", "--job_name", type=str, required=True, help="Job name"
-    )
+    parser.add_argument("-jn", "--job_name", type=str, required=True, help="Job name")
     parser.add_argument(
         "-f",
         "--fasta_path",
@@ -116,7 +112,7 @@ def main():
         "--protein_type",
         type=str,
         required=True,
-        help="Protein types",
+        help="Comma separated list of protein types",
     )
     parser.add_argument(
         "-s",

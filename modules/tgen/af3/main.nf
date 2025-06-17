@@ -101,7 +101,7 @@ process FILT_FORMAT_MSA {
         python ${moduleDir}/resources/usr/bin/filt_format_msa.py \\
             -t "${meta.protein_type}" \\
             -f "$fasta" \\
-            -o "${fasta.getSimpleName()}.filt.fasta"
+            -o "${fasta.getSimpleName()}.filt.json"
     """
 }
 

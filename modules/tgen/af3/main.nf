@@ -172,6 +172,8 @@ process STORE_MSA {
 
 process COMPOSE_INFERENCE_JSON {
     label "process_local"
+    errorStrategy { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry' }
+    maxRetries 5
     tag "${meta.id}"
 
     input:
@@ -253,6 +255,8 @@ process BATCHED_INFERENCE {
 process CLEAN_INFERENCE_DIR {
     label "process_local"
     tag "clean_inference"
+    errorStrategy { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry' }
+    maxRetries 5
     publishDir "${params.outdir}", mode: 'copy'
 
     input:

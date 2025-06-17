@@ -89,6 +89,7 @@ process FILT_FORMAT_MSA {
 
 
     script:
+    def force = params.force_update_msa ? "--force" : ''
     """
     module load singularity
 
@@ -101,7 +102,8 @@ process FILT_FORMAT_MSA {
         python ${moduleDir}/resources/usr/bin/filt_format_msa.py \\
             -t "${meta.protein_type}" \\
             -f "$fasta" \\
-            -o "${fasta.getSimpleName()}.filt.json"
+            -o "${fasta.getSimpleName()}.filt.json" \\
+            ${force} 
     """
 }
 

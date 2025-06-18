@@ -42,7 +42,7 @@ def read_json(json_path):
         return json.dumps(msa_data), is_empty, seq
     except Exception as e:
         print(f"Error processing JSON: {e}")
-        return None
+        raise
 
 
 def store_in_database(
@@ -165,8 +165,7 @@ def store_in_database(
             else:
 
                 schema = pa.schema(
-                    [pa.field("$row_id", pa.uint64())]
-                    + list(table.arrow_schema)
+                    [pa.field("$row_id", pa.uint64())] + list(table.arrow_schema)
                 )
                 data = [[result["$row_id"][0]]] + data
                 updated_row = pa.table(schema=schema, data=data)
@@ -177,9 +176,7 @@ def store_in_database(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Store MSA JSON into SQLite DB."
-    )
+    parser = argparse.ArgumentParser(description="Store MSA JSON into SQLite DB.")
 
     parser.add_argument(
         "-t", "--protein_type", type=str, required=True, help="Protein type"

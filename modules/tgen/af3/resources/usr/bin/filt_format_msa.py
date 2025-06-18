@@ -105,7 +105,7 @@ if __name__ == "__main__":
         "-f", "--fasta", type=str, required=True, help="Protein sequence"
     )
     parser.add_argument(
-        "--force", action="store_true", required=False, help="Forrce update MSA"
+        "--force", action="store_true", required=False, help="Force update MSA"
     )
     parser.add_argument(
         "-o",

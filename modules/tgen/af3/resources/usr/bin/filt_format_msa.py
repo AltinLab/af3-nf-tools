@@ -105,6 +105,9 @@ if __name__ == "__main__":
         "-f", "--fasta", type=str, required=True, help="Protein sequence"
     )
     parser.add_argument(
+        "--force", action="store_true", required=False, help="Forrce update MSA"
+    )
+    parser.add_argument(
         "-o",
         "--output",
         type=str,
@@ -116,7 +119,7 @@ if __name__ == "__main__":
 
     database = "https://pub-vscratch.vast.rc.tgen.org"
 
-    if not is_msa_stored(args.protein_type, seq, database):
+    if args.force or not is_msa_stored(args.protein_type, seq, database):
 
         with open(args.output, "w") as f:
             json_dict = {

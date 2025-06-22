@@ -110,7 +110,7 @@ process FILT_FORMAT_MSA {
 process RUN_MSA {
     queue 'compute'
     cpus '8'
-    memory { "${ Math.min(256, 64 * Math.pow(2, task.attempt - 1)) }GB" }
+    memory { "${ Math.min(512, 64 * Math.pow(2, task.attempt - 1)) }GB" }
     executor "slurm"
     clusterOptions '--time=8:00:00'
     errorStrategy { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry' }

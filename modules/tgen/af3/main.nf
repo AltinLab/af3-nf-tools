@@ -127,6 +127,18 @@ process RUN_MSA {
     """
     module load singularity
 
+    # some MSAs are so large they overrun the tmpdir on the compute node (which is approx 175 GB)
+    # jackhammer uses java.io.tmpdir: https://github.com/search?q=repo%3Aolacabs%2Fjackhammer%20TMPDIR&type=code
+    # set it using: https://serverfault.com/questions/72955/how-to-change-default-tmp-to-home-user-tmp
+    export SINGULARITYENV__JAVA_OPTIONS="-Djava.io.tmpdir=${params.msa_tmpdir}"
+
+    # debug: check this worked
+    singularity exec \\
+        -B /home,/scratch,/tgen_labs,/ref_genomes \\
+        --cleanenv \\
+        /tgen_labs/altin/alphafold3/containers/alphafold_3.0.1.sif \\
+            java -XshowSettings
+
     singularity exec \\
         -B /home,/scratch,/tgen_labs,/ref_genomes \\
         --cleanenv \\

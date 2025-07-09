@@ -190,6 +190,7 @@ process COMPOSE_INFERENCE_JSON {
 
     script:
     def seeds = params.seeds ? "--seeds ${params.seeds}" : ''
+    def segids = params.segids ? "--segids ${params.segids.join('')}" : ''
     def check_inf_exists = params.check_inf_exists ? """
     if [ -d "${params.outdir}/inference/${meta.id}" ]; then
         echo "Skipping ${meta.id}"
@@ -212,6 +213,7 @@ process COMPOSE_INFERENCE_JSON {
             -jn "${meta.id}" \\
             -f "$fasta" \\
             -pt "${meta.protein_types.join(',')}" \\
+            ${segids} \\
             ${skip_msa_arg} \\
             ${seeds} 
     """

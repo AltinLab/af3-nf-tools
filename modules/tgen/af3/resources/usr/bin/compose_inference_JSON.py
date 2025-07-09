@@ -115,6 +115,12 @@ def main():
         help="Comma separated list of protein types",
     )
     parser.add_argument(
+        "--segids",
+        type=str,
+        required=False,
+        help="Comma separated list of segids (chain IDs) the same length as the number of proteins",
+    )
+    parser.add_argument(
         "-s",
         "--seeds",
         type=str,
@@ -127,6 +133,8 @@ def main():
 
     if args.skip_msa:
         skip_msa = set([int(i) for i in args.skip_msa.split(",")])
+
+    segids = args.segids if args.segids else None
 
     protein_type = list(args.protein_type.split(","))
 
@@ -156,10 +164,15 @@ def main():
 
     for i, seq in enumerate(seqs):
 
+        if segids is not None:
+            segid = segids[i]
+        else:
+            segid = chr(65 + 1)
+
         if args.skip_msa and i in skip_msa:
             msa = {
                 "protein": {
-                    "id": chr(65 + i),
+                    "id": segid,
                     "sequence": seq,
                     "unpairedMsa": f">query\n{seq}\n",
                     "pairedMsa": f">query\n{seq}\n",
@@ -168,7 +181,7 @@ def main():
             }
         else:
             msa = get_msa(session, protein_type[i], seq)
-            msa["id"] = chr(65 + i)
+            msa["id"] = segid
             msa = {"protein": msa}
         msas.append(msa)
 

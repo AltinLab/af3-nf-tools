@@ -197,7 +197,7 @@ process COMPOSE_INFERENCE_JSON {
         exit 0
     fi
     """ : ''
-    def skip_msa_arg = params.skip_msa ? "--skip_msa ${params.skip_msa}" : ''
+    def skip_msa_arg = (params.skip_msa != null) ? "--skip_msa ${params.skip_msa}" : ''
     """
     module load singularity
 

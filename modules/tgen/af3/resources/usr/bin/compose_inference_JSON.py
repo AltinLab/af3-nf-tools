@@ -162,6 +162,9 @@ def main():
 
     seqs = read_fasta_seqs(args.fasta_path)
 
+    if segids is not None and len(segids) != len(seqs):
+        raise ValueError
+
     for i, seq in enumerate(seqs):
 
         if segids is not None:

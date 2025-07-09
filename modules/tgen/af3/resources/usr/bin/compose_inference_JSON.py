@@ -134,7 +134,7 @@ def main():
     if args.skip_msa:
         skip_msa = set([int(i) for i in args.skip_msa.split(",")])
 
-    segids = args.segids if args.segids else None
+    segids = args.segids.split(",") if args.segids else None
 
     protein_type = list(args.protein_type.split(","))
 

@@ -190,7 +190,7 @@ process COMPOSE_INFERENCE_JSON {
 
     script:
     def seeds = params.seeds ? "--seeds ${params.seeds}" : ''
-    def segids = params.segids ? "--segids ${params.segids.join('')}" : ''
+    def segids = params.segids ? "--segids ${params.segids}" : ''
     def check_inf_exists = params.check_inf_exists ? """
     if [ -d "${params.outdir}/inference/${meta.id}" ]; then
         echo "Skipping ${meta.id}"

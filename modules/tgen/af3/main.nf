@@ -237,6 +237,7 @@ process BATCHED_INFERENCE {
     output:
     tuple val(batched_meta), path("inference/*")
     script:
+    def save_embeddings = params.save_embeddings ? "--save_embeddings" : ''
     """
     module load singularity
 
@@ -255,6 +256,7 @@ process BATCHED_INFERENCE {
             --db_dir=/ref_genomes/alphafold/alphafold3/ \\
             --output_dir=inference \\
             --norun_data_pipeline \\
+            ${save_embeddings} \\
             --num_diffusion_samples=1
         """
 }
